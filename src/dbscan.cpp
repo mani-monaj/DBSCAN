@@ -4,9 +4,12 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/algorithm/minmax.hpp>
 #include <vector>
-#include <omp.h>
 
-#include "dbscan.h"
+#if defined(WITH_OPENMP)
+  #include <omp.h>
+#endif
+
+#include "dbscan/dbscan.h"
 
 namespace clustering
 {
@@ -84,9 +87,11 @@ namespace clustering
 	{
 		DBSCAN::ClusterData cl_d = C;
 
-		omp_set_dynamic(0);     
-		omp_set_num_threads( m_num_threads );
-		#pragma omp parallel for
+    #if defined(WITH_OPENMP)
+      omp_set_dynamic(0);
+      omp_set_num_threads( m_num_threads );
+      #pragma omp parallel for
+    #endif
 		for (size_t i = 0; i < cl_d.size2(); ++i)
 		{
 			ublas::matrix_column<DBSCAN::ClusterData>col(cl_d, i);
@@ -110,9 +115,11 @@ namespace clustering
 		ublas::vector<double> d_max( cl_d.size1() );
 		ublas::vector<double> d_min( cl_d.size1() );
 
-		omp_set_dynamic(0);     
-		omp_set_num_threads( m_num_threads );
-		#pragma omp parallel for
+    #if defined(WITH_OPENMP)
+      omp_set_dynamic(0);
+      omp_set_num_threads( m_num_threads );
+      #pragma omp parallel for
+    #endif
 		for (size_t i = 0; i < cl_d.size1(); ++i)
 		{
 			for (size_t j = i; j < cl_d.size1(); ++j)	

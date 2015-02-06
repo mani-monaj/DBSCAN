@@ -1,5 +1,5 @@
 #include <boost/python.hpp>
-#include "dbscan.h"
+#include "dbscan/dbscan.h"
 
 using namespace boost::python;
 using namespace clustering;

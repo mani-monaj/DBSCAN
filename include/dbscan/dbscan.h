@@ -1,5 +1,6 @@
 #include <vector>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <cstdint>
 
 using namespace boost::numeric;
 
