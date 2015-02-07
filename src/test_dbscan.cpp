@@ -8,61 +8,50 @@ using namespace clustering;
 #include <string>
 #include <fstream>
 #include <boost/lexical_cast.hpp>
-int main()
+
+int main(int argc, char* argv[])
 {
-//  //DBSCAN::ClusterData cl_d = DBSCAN::gen_cluster_data( 225, 10000 );
-//  DBSCAN::ClusterData cl_d = DBSCAN::gen_cluster_data( 2, 5 );
-//  cl_d(0, 0) = -1.0;
-//  cl_d(0, 1) = 1.0;
-
-//  cl_d(1, 0) = -0.9;
-//  cl_d(1, 1) = 0.9;
-
-//  cl_d(2, 0) = 1.0;
-//  cl_d(2, 1) = -1.0;
-
-//  cl_d(3, 0) = 0.9;
-//  cl_d(3, 1) = -0.9;
-
-//  cl_d(4, 0) = 0.0;
-//  cl_d(4, 1) = 0.0;
-
-//  DBSCAN dbs(0.25, 2, 1);
-
-//	dbs.fit( cl_d );
-
-//  std::cout << dbs << std::endl;
-
-  std::ifstream csv_file ("/tmp/2.txt");
-  if (!csv_file.is_open()) return 1;
-  typedef boost::tokenizer< boost::escaped_list_separator<char> > Tokenizer;
-
-  std::vector<std::string> vec;
-  std::string line;
-
-  std::size_t i = 0;
-
-  clustering::DBSCAN::ClusterData cl_d(1000, 2);
-  while (getline(csv_file, line))
+  if (argc == 1)
   {
-    Tokenizer tok(line);
-    vec.assign(tok.begin(),tok.end());
-
-    cl_d(i, 0) = boost::lexical_cast<double>(vec[0]);
-    cl_d(i, 1) = boost::lexical_cast<double>(vec[1]);
-
-
-    std::cout << i << " " << cl_d(i, 0) << " " << cl_d(i, 1) << std::endl;
-    i++;
+    // Legacy test
+    std::cout << "Running legacy test, 10000 random points with 225 features each" << std::endl;
+    DBSCAN::ClusterData cl_d = DBSCAN::gen_cluster_data( 225, 10000 );
+    DBSCAN dbs(0.1, 5, 1);
+    dbs.fit( cl_d );
+    std::cout << dbs << std::endl;
   }
-  csv_file.close();
+  else if (argc == 2)
+  {
+    // New demo (read max 2 cols of the input csv file)
+    std::ifstream csv_file (argv[1]);
+    if (!csv_file.is_open()) return 1;
+    std::string line;
+    size_t rows = 0;
+    while (std::getline(csv_file, line)) rows++;
+    std::cout << "Number of rows " << rows << std::endl;
+    csv_file.clear();
+    csv_file.seekg(0);
 
-  DBSCAN dbs(0.01, 10, 1);
+    typedef boost::tokenizer< boost::escaped_list_separator<char> > Tokenizer;
+    std::vector<std::string> vec;
 
-  dbs.fit( cl_d );
+    clustering::DBSCAN::ClusterData cl_d(rows, 2);
+    for (std::size_t i = 0; i < rows && std::getline(csv_file, line); i++)
+    {
+      Tokenizer tok(line);
+      vec.assign(tok.begin(),tok.end());
+      cl_d(i, 0) = boost::lexical_cast<double>(vec[0]);
+      cl_d(i, 1) = boost::lexical_cast<double>(vec[1]);
+    }
+    csv_file.close();
 
-  std::cout << dbs << std::endl;
+    DBSCAN dbs(0.01, 10, 1);
 
+    dbs.fit( cl_d );
+
+    std::cout << dbs << std::endl;
+    return 0;
+  }
 
 	return 0;
 }
