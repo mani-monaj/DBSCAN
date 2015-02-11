@@ -1,3 +1,6 @@
+#ifndef DBSCAN_H
+#define DBSCAN_H
+
 #include <vector>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <cstdint>
@@ -48,3 +51,5 @@ namespace clustering
 
 	std::ostream& operator<<(std::ostream& o, DBSCAN & d);
 }
+
+#endif
